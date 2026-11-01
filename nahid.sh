@@ -63,6 +63,30 @@ fi
 echo -e "${G}ACCESS GRANTED!${N}"
 sleep 1
 
+# Visual-only demo loading animation
+show_loading() {
+    local label="$1"
+    local action="$2"
+    local i
+    echo
+    echo -e "${C}${action} ${label}...${N}"
+    for i in 0 20 40 60 80 100; do
+        printf "\r${G}["
+        local filled=$((i / 5))
+        printf '%*s' "$filled" '' | tr ' ' '#'
+        printf '%*s' "$((20 - filled))" '' | tr ' ' '-'
+        printf "] ${Y}%3d%%${N}" "$i"
+        sleep 0.35
+    done
+    echo
+    if [ "$action" = "ACTIVATING" ]; then
+        echo -e "${G}✓ ${label} ACTIVATED!${N}"
+    else
+        echo -e "${Y}✓ ${label} DEACTIVATED!${N}"
+    fi
+    sleep 1
+}
+
 names=(
 "DEVICE INFO"
 "AIM BOT"
@@ -122,17 +146,20 @@ while true; do
                 read -p "Press ENTER to return..."
             else
                 if [ "${states[$idx]}" = "OFF" ]; then
+                    show_loading "${names[$idx]}" "ACTIVATING"
                     states[$idx]="ON"
                 else
+                    show_loading "${names[$idx]}" "DEACTIVATING"
                     states[$idx]="OFF"
                 fi
             fi
             ;;
         X)
+            show_loading "ALL FEATURES" "DEACTIVATING"
             for i in {0..8}; do
                 states[$i]="OFF"
             done
-            echo -e "${G}ALL DEMO FEATURES DISABLED!${N}"
+            echo -e "${G}✓ ALL FEATURES DEACTIVATED!${N}"
             sleep 1
             ;;
         Q)
